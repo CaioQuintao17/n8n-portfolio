@@ -1,0 +1,641 @@
+{
+  "name": "LeadFlow AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "captura-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "23c235e6-ec89-4668-9124-4e2e92625321",
+      "name": "Webhook",
+      "webhookId": "41f83cac-b7df-4a4a-a382-27fd59725c76"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0dc5038c-c10b-42f6-808a-01cd2914fe82",
+              "leftValue": "={{ $json.body.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2910d483-7629-4c44-8a37-03c777e58f70",
+              "leftValue": "={{ $json.body.nome }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "28a06d8c-ec9f-4aff-870b-15947b587b1a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "  https://api.hunter.io/v2/combined/find",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ $json.body.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        -32
+      ],
+      "id": "25138828-41f2-482d-960d-c916f3244908",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "OB3PHQqi3cH7ijq6",
+          "name": "Query Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c25205e-837d-44dd-9447-5a83be90f564",
+              "name": "nome",
+              "value": "={{ $('Webhook').item.json.body.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "04242e68-27b2-4416-812f-e677a411c8f4",
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "55413fcd-e585-4dc0-8a61-31ddbfd17997",
+              "name": "empresa",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "4c54229c-4b97-4ee6-bfad-389debdab0d1",
+              "name": "cargo",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e27293b9-9de0-4089-91cb-fbc2b4af4e71",
+              "name": "enriquecido",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        80
+      ],
+      "id": "cd1c8da3-3592-4bc0-ae61-c08ea7c3ddd5",
+      "name": "Set - Lead sem enriquecido"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1088,
+        -64
+      ],
+      "id": "cc26fa1d-bec1-42dd-bc22-d59c98322075",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c25205e-837d-44dd-9447-5a83be90f564",
+              "name": "nome",
+              "value": "={{ $('Webhook').item.json.body.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "04242e68-27b2-4416-812f-e677a411c8f4",
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "55413fcd-e585-4dc0-8a61-31ddbfd17997",
+              "name": "empresa",
+              "value": "={{ $json.data.person.employment.name || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "4c54229c-4b97-4ee6-bfad-389debdab0d1",
+              "name": "cargo",
+              "value": "={{ $json.data.person.employment.title || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "e27293b9-9de0-4089-91cb-fbc2b4af4e71",
+              "name": "enriquecido",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -128
+      ],
+      "id": "058837b1-d55f-4d18-a6d5-67a732fec4c3",
+      "name": "Set - Lead Enriquecido"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7919efcb-f3fb-4be1-895e-bd5312398786",
+              "leftValue": "={{ $json.enriquecido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "43ef9be9-96e7-4b2e-ab1b-5a571dc3e852",
+              "leftValue": "={{ $json.cargo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1296,
+        -64
+      ],
+      "id": "59099066-5f67-4ce4-a8e3-acd45939a8c5",
+      "name": "IF - Lead Qualificado?"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 309984021,
+          "mode": "list",
+          "cachedResultName": "nutricao",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A/edit#gid=309984021"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cargo",
+              "displayName": "cargo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "enriquecido",
+              "displayName": "enriquecido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1568,
+        48
+      ],
+      "id": "fd242a63-202f-452f-8e53-031591b7972f",
+      "name": "Google Sheets - Nutrição",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mhqNuc3FT4dnGbLI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "vendas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gpfaxC3dvYp0XOmwmHiXpJyIsyILo-kd2MxVb3-GX3A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nome": "={{ $json.nome }}",
+            "email": "={{ $json.email }}",
+            "empresa": "={{ $json.empresa }}",
+            "cargo": "={{ $json.cargo }}",
+            "enriquecido": "={{ $json.enriquecido }}",
+            "data": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cargo",
+              "displayName": "cargo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "enriquecido",
+              "displayName": "enriquecido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        -224
+      ],
+      "id": "173c2ae9-1926-4163-8fe3-12b6f8eaea53",
+      "name": "Google Sheets - Vendas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mhqNuc3FT4dnGbLI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BDQD59E57",
+          "mode": "id"
+        },
+        "text": "=🎯 Novo lead qualificado! Nome: {{ $json.nome }} Empresa: {{ $json.empresa }} Cargo: {{ $json.cargo }} E-mail: {{ $json.email }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        1792,
+        -224
+      ],
+      "id": "38dbf57c-ca80-49cf-9bb7-83bab5dea782",
+      "name": "Send a message",
+      "webhookId": "3246c214-1efe-41e1-ae26-67d651db6bc6",
+      "credentials": {
+        "slackApi": {
+          "id": "HDUikLOTy81q6zFZ",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "    {\n      \"status\": \"sucesso\",\n      \"qualificado\": true,\n      \"mensagem\": \"Lead recebido, enriquecido e encaminhado para vendas!\"\n    }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2000,
+        -224
+      ],
+      "id": "eb6b81fa-c8d2-4551-8f57-b6d8623659c2",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n      \"status\": \"sucesso\",\n      \"qualificado\": false,\n      \"mensagem\": \"Lead recebido e adicionado à lista de nutrição.\"\n    }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1808,
+        64
+      ],
+      "id": "63f1a305-bf88-479f-9c1a-f3125af65fe5",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Set - Lead Enriquecido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Lead sem enriquecido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Lead sem enriquecido": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set - Lead Enriquecido": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "IF - Lead Qualificado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Lead Qualificado?": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Nutrição",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Vendas": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Nutrição": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "38dd4cb0-7b0d-42b7-aa53-7c160efca1b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0d496397e6f67a485720a5dd58aa8e8e51f0a827b0e70cebec932c86ad5ab6f6"
+  },
+  "nodeGroups": [],
+  "id": "JTUzyNX10tQ93I8T",
+  "tags": []
+}
