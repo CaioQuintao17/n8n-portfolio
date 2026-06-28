@@ -1,4 +1,4 @@
-# 🚀 LeadFlow AI — Captura e Enriquecimento Automático de Leads B2B
+# LeadFlow AI — Captura e Enriquecimento Automático de Leads B2B
 
 > Workflow n8n que recebe leads via webhook, enriquece os dados automaticamente com a API do Hunter.io, qualifica o lead com base no cargo identificado, e direciona para o time de vendas (Slack + Google Sheets) ou para uma lista de nutrição — sem nenhuma intervenção manual.
 
