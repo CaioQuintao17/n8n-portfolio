@@ -57,5 +57,5 @@ flowchart LR
 ##  Hospedagem
 Desenvolvido em ambiente local (n8n self-hosted + túnel ngrok). Para produção real, recomenda-se n8n Cloud ou self-host em VPS (Railway/Render) com domínio fixo — eliminando a dependência do ngrok e permitindo funcionamento 24/7 sem depender do computador local estar ligado.
 
-## 🎯 Habilidades demonstradas
+##  Habilidades demonstradas
 Arquitetura de AI Agents, integração com LLMs (Groq/Llama), gerenciamento de memória conversacional por sessão, integração com Telegram Bot API, configuração de webhooks e túneis de desenvolvimento (ngrok), engenharia de prompt (System Message) para atendimento ao cliente, simplificação pragmática de arquitetura diante de restrições reais de ambiente.
