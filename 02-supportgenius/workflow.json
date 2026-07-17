@@ -1,0 +1,162 @@
+{
+  "name": "SupportGenius - Agente de Atendimento",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -192,
+        -208
+      ],
+      "id": "5ef0c382-663e-4c2f-bff2-793c7746974a",
+      "name": "Telegram Trigger",
+      "webhookId": "e18e683c-b93e-41d8-b3a8-4061700128c4",
+      "credentials": {
+        "telegramApi": {
+          "id": "7SPnP8p3MeG2AQVZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "Você é o assistente virtual da TechFácil, uma empresa de software de gestão para pequenas empresas. Seu nome é Fácil.\n\nResponda SEMPRE em português brasileiro, de forma educada, clara e objetiva.\n\nUse APENAS as informações abaixo para responder. Se não souber, diga que vai verificar com a equipe.\n\n=== BASE DE CONHECIMENTO ===\n\nPLANOS E PREÇOS:\n- Starter: R$49/mês, até 2 usuários\n- Professional: R$149/mês, até 10 usuários  \n- Enterprise: R$399/mês, usuários ilimitados\n- Todos têm 14 dias grátis sem cartão\n- Cancelamento a qualquer momento sem multa\n\nSUPORTE:\n- Horário: segunda a sexta, 8h às 18h (Brasília)\n- Abrir chamado: painel → Ajuda → Abrir Chamado\n- Resposta em até 4 horas úteis\n- Sistema 100% online, não funciona offline\n\nCONTA E ACESSO:\n- Esqueceu senha: clique \"Esqueci minha senha\" no login\n- App disponível para Android e iOS gratuitamente\n- Sem limite de dispositivos simultâneos\n\nINTEGRAÇÕES E DADOS:\n- Integração com NF-e disponível\n- Criptografia ponta a ponta, servidores no Brasil, conformidade LGPD\n- Importação via Excel (.xlsx) ou CSV"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3c3e0d0f-6ac8-4ebd-8193-77ff7a678f73",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        336
+      ],
+      "id": "99244ae3-ab82-4c87-87bf-ab1ff9908400",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "BxRnfzVv2tNyHRev",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        640,
+        320
+      ],
+      "id": "6f9bc6b2-2fe8-4938-9ab2-b5af73d46cc2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        -208
+      ],
+      "id": "818028c5-2001-49c3-9dd7-18be3622dd8b",
+      "name": "Send a text message",
+      "webhookId": "2e861c09-ad6a-4e4f-8afd-9888c91140be",
+      "credentials": {
+        "telegramApi": {
+          "id": "7SPnP8p3MeG2AQVZ",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "82768f2d-1871-4d71-95d6-2c053637e429",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0d496397e6f67a485720a5dd58aa8e8e51f0a827b0e70cebec932c86ad5ab6f6"
+  },
+  "nodeGroups": [],
+  "id": "rl1od7I6Jtb2Ed4W",
+  "tags": []
+}
