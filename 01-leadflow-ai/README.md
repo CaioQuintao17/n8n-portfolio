@@ -6,11 +6,11 @@
 
 ---
 
-## 📌 O problema de negócio
+##  O problema de negócio
 
 Times de vendas recebem leads de formulários (site, landing page, evento) e perdem tempo enriquecendo manualmente cada lead (cargo, empresa, e-mail corporativo) antes de decidir se vale a pena entrar em contato. Esse workflow automatiza inteiramente essa triagem inicial.
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 ```mermaid
 flowchart LR
@@ -29,7 +29,7 @@ flowchart LR
     K --> J2[Respond to Webhook: nutrição]
 ```
 
-## 🔄 Como o fluxo funciona, passo a passo
+##  Como o fluxo funciona, passo a passo
 
 1. **Webhook** recebe o POST com `nome` e `email` do lead (simulando o formulário do site).
 2. **IF de validação** confirma que os dois campos vieram preenchidos.
@@ -41,7 +41,7 @@ flowchart LR
 8. Lead não qualificado → grava na aba `nutricao`, sem notificação.
 9. Em ambos os casos, um **Respond to Webhook** devolve uma confirmação ao chamador, só depois que todo o processamento termina.
 
-## 🧩 Nós utilizados
+## Nós utilizados
 
 | Nó | Função |
 |---|---|
@@ -54,13 +54,13 @@ flowchart LR
 | **Slack** | Notifica o time comercial em tempo real sobre leads qualificados |
 | **Respond to Webhook** (x2) | Retorna a confirmação final ao formulário de origem |
 
-## ⚙️ Decisões de arquitetura
+##  Decisões de arquitetura
 
 - **Autenticação via credencial (Query Auth), nunca hardcoded** — a chave da API do Hunter fica isolada no cofre de credenciais do n8n, fora do workflow exportado.
 - **Tratamento de erro nativo no HTTP Request** (`Continue using error output`) em vez de deixar o workflow quebrar quando o Hunter não encontra o lead — isso é essencial em produção, já que nem todo e-mail vai retornar dados completos.
 - **Regra de qualificação simples e auditável**: `enriquecido = true AND cargo não vazio`. Fácil de explicar para qualquer stakeholder de negócio, e fácil de evoluir depois (ex: checar palavras-chave no cargo).
 
-## 🧪 Desafios reais enfrentados (e como resolvi)
+##  Desafios reais enfrentados (e como resolvi)
 
 Documentar os problemas reais é, às vezes, mais valioso do que documentar só o "caminho feliz":
 
@@ -71,11 +71,11 @@ Documentar os problemas reais é, às vezes, mais valioso do que documentar só 
 | Hunter recusava e-mails de teste | E-mails fictícios, **webmail** (Gmail/Outlook) e **role-based** (`press@`, `contato@`) não retornam dados de enriquecimento de pessoa — é uma limitação esperada da própria base de dados, não um bug | Tratei esses casos como um caminho de erro válido no fluxo (`On Error: Continue using error output`), em vez de travar o workflow |
 | Lead caía sempre em "nutrição", mesmo com dados aparentemente certos | Os campos `empresa`/`cargo` no nó Set nunca tinham, de fato, uma expressão configurada — estavam no modo "Fixed", vazios | Reconfigurei os campos para o modo "Expression", apontando para `$json.data.person.employment.name` e `.title` |
 
-## ☁️ Hospedagem
+##  Hospedagem
 Desenvolvido e testado em ambiente **n8n local** (self-hosted). Para produção, recomenda-se Docker em um VPS (Railway/Render/Hetzner) com a variável `WEBHOOK_URL` configurada para o domínio público.
 
-## 🔐 Variáveis de ambiente
+##  Variáveis de ambiente
 Veja `.env.example`. Nenhuma chave real está versionada neste repositório — todas as credenciais ficam isoladas no cofre de Credentials do n8n.
 
-## 🎯 Habilidades demonstradas
+## Habilidades demonstradas
 Webhooks e APIs REST autenticadas, tratamento de erro em pipelines de automação (error branches), lógica condicional de qualificação de negócio, integração com Google Sheets e Slack, debugging sistemático de um fluxo de produção ponta a ponta.
